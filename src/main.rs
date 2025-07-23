@@ -9,21 +9,7 @@ const CITY: &str = "Oulu";
 const COUNTRY: &str = "FI";
 
 async fn fetch_and_update_weather(weak: slint::Weak<Overlay>, city: String, country: String) {
-    let api_key = match std::env::var("OPENWEATHER_API_KEY") {
-        Ok(key) => key,
-        Err(_) => {
-            slint::invoke_from_event_loop(move || {
-                if let Some(handle) = weak.upgrade() {
-                    handle.set_temperature_text("API Key Missing".into());
-                }
-            }).unwrap();
-            return;
-        }
-    };
-
-    let result = get_weather(&city, &country, &api_key).await;
-
-    // The rest of the logic is the same...
+    let result = get_weather(&city, &country).await;
     slint::invoke_from_event_loop(move || {
         if let Some(handle) = weak.upgrade() {
             let temp_text = match result {
@@ -54,10 +40,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
         };
         
         thread::spawn(move || {
-            // Give the application a full second to initialize and settle down.
-
             use std::time::Duration;
+            
             log::debug!("La-di-da-da - waiting a while…");
+            // Give the application a full second to initialize and settle down.
             thread::sleep(Duration::from_millis(1000));
 
             let title_wide: Vec<u16> = "TaskbarWeatherAppThigyDoohickey"
@@ -65,7 +51,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .chain(std::iter::once(0))
                 .collect();
 
-            // After waiting, we only need to try once.
+            // Window *should* be stable by now …
             log::debug!("Hum-di-dum, wait is over…");
             unsafe {
                 if let Ok(slint_hwnd) = FindWindowW(PCWSTR::null(), PCWSTR::from_raw(title_wide.as_ptr())) {
