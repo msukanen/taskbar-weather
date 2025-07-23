@@ -1,0 +1,15 @@
+[package]
+name = "taskbar-weather"
+version = "0.1.0"
+edition = "2024"
+authors = ["Markku Sukanen <markku.sukanen@github.com>"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/msukanen/taskbar-weather.git"
+description = "A taskbar overlay weather doodah."
+
+[dependencies]
+iced = "0.13"
+
+[badges]
+maintenance = { status = "experimental" }
