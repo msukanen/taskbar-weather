@@ -9,7 +9,22 @@ repository = "https://github.com/msukanen/taskbar-weather.git"
 description = "A taskbar overlay weather doodah."
 
 [dependencies]
-iced = "0.13"
+log = "0.4"
+env_logger = "0.11"
+serde = { version = "1", features = ["derive"]}
+reqwest = { version = "0.11", features = ["json"]}
+serde_json = "1.0.141"
+tokio = { version = "1", features = ["full"]}
+slint = "1.12.1"
+windows = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Shell",
+]}
+raw-window-handle = "0.6.2"
+
+[build-dependencies]
+slint-build = "1.12.1"
 
 [badges]
 maintenance = { status = "experimental" }

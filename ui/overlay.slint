@@ -1,0 +1,25 @@
+export component Overlay inherits Window {
+    in-out property<string> temperature_text;
+    callback request_weather_update();
+    width: 160px;
+    height: 40px;
+    background: transparent;
+    title: "TaskbarWeatherAppThigyDoohickey";
+    no-frame: true;
+
+    Text {
+        text: temperature_text;
+        font-size: 24px;
+        color: white;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    Timer {
+        interval: 900000ms;
+        running: true;
+        triggered => {
+            root.request_weather_update();
+        }
+    }
+}
