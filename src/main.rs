@@ -1,12 +1,22 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod query;
-use std::error::Error;
 
+use std::{error::Error, fs};
+use directories::ProjectDirs;
+use serde::Deserialize;
 use crate::query::weather::get_weather;
+
 slint::include_modules!();
 
 const CITY: &str = "Oulu";
 const COUNTRY: &str = "FI";
+const WINDOW_TITLE: &str = "TaskbarWeatherAppThigyDoohickey"; // this has to be EXACTLY the same as it's in ui/overlay.slint
+
+#[derive(Deserialize)]
+struct Config {
+    city: String,
+    country: String,
+}
 
 async fn fetch_and_update_weather(weak: slint::Weak<Overlay>, city: String, country: String) {
     let result = get_weather(&city, &country).await;
@@ -29,6 +39,37 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let ui = Overlay::new()?;
     let _ = env_logger::try_init();
 
+    let config = if let Some(proj_dirs) = ProjectDirs::from("net", "msukanen", "TaskbarWeather") {
+        let config_path = proj_dirs.config_dir().join("config.toml");
+        
+        if !config_path.exists() {
+            log::debug!("No config file - creating an example config.toml …");
+            let default_config_content = format!(
+                "city = \"{}\"\ncountry = \"{}\"\n",
+                CITY, COUNTRY
+            );
+            if let Some(parent_dir) = config_path.parent() {
+                fs::create_dir_all(parent_dir).ok();
+            }
+            fs::write(&config_path, default_config_content).ok();
+        }
+
+        fs::read_to_string(config_path)
+            .ok()
+            .and_then(|content| toml::from_str::<Config>(&content).ok())
+    } else {
+        log::warn!("Something went seriously wrong with config …");
+        None
+    };
+
+    // Use the config values if they exist, otherwise use the defaults.
+    let (city, country) = if let Some(conf) = config {
+        log::debug!("Config read, city set as '{}' and country as '{}'.", conf.city, conf.country);
+        (conf.city, conf.country)
+    } else {
+        (CITY.to_string(), COUNTRY.to_string())
+    };
+
     #[cfg(target_os = "windows")]
     {
         use std::thread;
@@ -46,7 +87,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Give the application a full second to initialize and settle down.
             thread::sleep(Duration::from_millis(1000));
 
-            let title_wide: Vec<u16> = "TaskbarWeatherAppThigyDoohickey"
+            let title_wide: Vec<u16> = WINDOW_TITLE
                 .encode_utf16()
                 .chain(std::iter::once(0))
                 .collect();
@@ -74,14 +115,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     log::error!("Could not find the application window after waiting for 1 second.");
                 }
             }
+            log::info!("Up and running!");
         });
     }
 
     let weak = ui.as_weak();
-    let city = std::env::var("TASKBARKWEATHER_CITY").map_or(CITY.to_string(), |x|x);
-    let country = std::env::var("TASKBARWEATHER_COUNTRYCODE").map_or(COUNTRY.to_string(), |x|x);
-
-    // --- Initial weather update ---
+    log::info!("Initial weather fetch …");
     tokio::spawn(fetch_and_update_weather(weak.clone(), city.clone(), country.clone()));
 
     // --- Set up the timer callback ---
@@ -89,6 +128,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let weak = weak.clone();
         let city = city.clone();
         let country = country.clone();
+        log::debug!("Re-fetching weather data …");
         tokio::spawn(fetch_and_update_weather(weak, city, country));
     });
 
