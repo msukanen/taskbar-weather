@@ -12,7 +12,6 @@ slint::include_modules!();
 
 const CITY: &str = "Oulu";
 const COUNTRY: &str = "FI";
-const WINDOW_TITLE: &str = "TaskbarWeatherAppThigyDoohickey"; // this has to be EXACTLY the same as it's in ui/overlay.slint
 
 #[derive(Parser, Debug)]
 #[command(version, about = "Taskbar-Weather — a tool to fetch your local weather. Copyright © 2025 Markku Sukanen. See LICENSE.")]

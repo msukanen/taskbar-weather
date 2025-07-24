@@ -7,7 +7,9 @@ use windows::Win32::UI::WindowsAndMessaging::{
 };
 
 use crate::platform::HideAndSeek;
-use crate::{Overlay, WINDOW_TITLE};
+use crate::Overlay;
+
+const WINDOW_TITLE: &str = "TaskbarWeatherAppThigyDoohickey"; // this has to be EXACTLY the same as it's in ui/overlay.slint
 
 impl HideAndSeek for Overlay {
     fn stealth(&self) {
