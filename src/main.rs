@@ -31,6 +31,7 @@ struct Config {
     country: String,
 }
 
+#[cfg(not(feature = "headless"))]
 async fn fetch_and_update_weather(weak: slint::Weak<Overlay>, city: String, country: String) {
     let result = get_weather(&city, &country).await;
     slint::invoke_from_event_loop(move || {
