@@ -114,7 +114,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if args.headless {
         loop {
             nogui::get_weather(&city, &country).await;
-            // snooze!
             tokio::time::sleep(Duration::from_millis(MILLIS_CHECK_DELAY)).await;
         }
     }
