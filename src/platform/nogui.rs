@@ -1,7 +1,4 @@
 use crate::query::weather;
-#[cfg(not(windows))]
-use crate::{platform::HideAndSeek, Overlay};
-
 /// GUIless bridge to fetching weather info.
 /// 
 /// If successful, weather info is tossed into `stdout`.
@@ -22,9 +19,4 @@ pub async fn get_weather(city: &String, country: &String) {
         },
         Err(e) => log::error!("Could not fetch weather data! {:?}", e)
     };
-}
-
-#[cfg(not(windows))]
-impl HideAndSeek for Overlay {
-    fn stealth(&self) {/* No UI = no "stealth".*/}
 }
