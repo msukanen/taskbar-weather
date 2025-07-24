@@ -3,7 +3,7 @@ use windows::core::PCWSTR;
 use windows::Win32::UI::Shell::{SHAppBarMessage, ABM_GETTASKBARPOS, APPBARDATA, ABE_TOP, ABE_LEFT, ABE_RIGHT};
 use windows::Win32::UI::WindowsAndMessaging::{
     FindWindowW, GetDesktopWindow, GetWindowLongPtrW, SetParent, SetWindowLongPtrW,
-    SetWindowPos, GWL_EXSTYLE, SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE,
+    SetWindowPos, GWL_EXSTYLE, SWP_FRAMECHANGED, SWP_NOSIZE,
     SWP_NOZORDER, WS_EX_APPWINDOW, WS_EX_TOOLWINDOW,
 };
 
