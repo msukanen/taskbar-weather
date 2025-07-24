@@ -6,7 +6,9 @@ use std::{error::Error, fs};
 use directories::ProjectDirs;
 use serde::Deserialize;
 use clap::Parser;
-use crate::{platform::{nogui, HideAndSeek}, query::weather::get_weather};
+use crate::platform::nogui;
+#[cfg(not(feature = "headless"))]
+use crate::{platform::HideAndSeek, query::weather::get_weather};
 
 #[cfg(not(feature = "headless"))]
 slint::include_modules!();
