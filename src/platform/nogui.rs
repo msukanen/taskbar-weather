@@ -1,4 +1,6 @@
 use crate::query::weather;
+#[cfg(not(windows))]
+use crate::{platform::HideAndSeek, Overlay};
 
 /// GUIless bridge to fetching weather info.
 /// 
