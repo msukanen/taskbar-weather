@@ -2,7 +2,7 @@
 mod query;
 mod platform;
 
-use std::{error::Error, fs};
+use std::{error::Error, fs, time::Duration};
 use directories::ProjectDirs;
 use serde::Deserialize;
 use clap::Parser;
@@ -15,6 +15,7 @@ slint::include_modules!();
 
 const CITY: &str = "Oulu";
 const COUNTRY: &str = "FI";
+const MILLIS_CHECK_DELAY: u64 = 900_000; // 15 minutes (± a few picoseconds).
 
 #[derive(Parser, Debug, Clone)]
 #[command(version, about = "Taskbar-Weather — a tool to fetch your local weather. Copyright © 2025 Markku Sukanen. See LICENSE.")]
@@ -108,6 +109,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if args.oneshot {
         nogui::get_weather(&city, &country).await;
         return Ok(());
+    }
+
+    if args.headless {
+        loop {
+            nogui::get_weather(&city, &country).await;
+            // snooze!
+            tokio::time::sleep(Duration::from_millis(MILLIS_CHECK_DELAY)).await;
+        }
     }
 
     #[cfg(not(feature = "headless"))]
