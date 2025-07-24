@@ -24,6 +24,7 @@ windows = { version = "0.61", features = [
 raw-window-handle = "0.6.2"
 directories = "6.0.0"
 toml = "0.9.2"
+clap = { version = "4.5.41", features = ["derive"]}
 
 [build-dependencies]
 slint-build = "1.12.1"

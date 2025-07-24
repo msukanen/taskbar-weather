@@ -5,13 +5,25 @@ mod platform;
 use std::{error::Error, fs};
 use directories::ProjectDirs;
 use serde::Deserialize;
-use crate::{query::weather::get_weather, platform::HideAndSeek};
+use clap::Parser;
+use crate::{platform::{nogui, HideAndSeek}, query::weather::get_weather};
 
 slint::include_modules!();
 
 const CITY: &str = "Oulu";
 const COUNTRY: &str = "FI";
 const WINDOW_TITLE: &str = "TaskbarWeatherAppThigyDoohickey"; // this has to be EXACTLY the same as it's in ui/overlay.slint
+
+#[derive(Parser, Debug)]
+#[command(version, about = "Taskbar-Weather — a tool to fetch your local weather. Copyright © 2025 Markku Sukanen. See LICENSE.")]
+struct CommandLineArgs {
+    /// If given, doesn't use UI and logs to console instead.
+    #[arg(long, )]
+    headless: bool,
+    /// If given, checkes weather once, logs it to console, and quits right after.
+    #[arg(short, long, )]
+    oneshot: bool,
+}
 
 #[derive(Deserialize)]
 struct Config {
@@ -37,9 +49,9 @@ async fn fetch_and_update_weather(weak: slint::Weak<Overlay>, city: String, coun
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let ui = Overlay::new()?;
     let _ = env_logger::try_init();
 
+    let args = CommandLineArgs::parse();
     let config = if let Some(proj_dirs) = ProjectDirs::from("net", "msukanen", "TaskbarWeather") {
         let config_path = proj_dirs.config_dir().join("config.toml");
         
@@ -63,7 +75,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         None
     };
 
-    // Use the config values if they exist, otherwise use the defaults.
+    // Use the config values if they exist (they should — if the config
+    // read/write didn't miserably fail), otherwise use the defaults.
     let (city, country) = if let Some(conf) = config {
         log::debug!("Config read, city set as '{}' and country as '{}'.", conf.city, conf.country);
         (conf.city, conf.country)
@@ -71,6 +84,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
         (CITY.to_string(), COUNTRY.to_string())
     };
 
+    if args.oneshot {
+        nogui::get_weather(&city, &country).await;
+        return Ok(());
+    }
+
+    let ui = Overlay::new()?;
     ui.stealth();
 
     let weak = ui.as_weak();
