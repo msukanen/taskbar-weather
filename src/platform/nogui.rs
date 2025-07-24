@@ -21,3 +21,8 @@ pub async fn get_weather(city: &String, country: &String) {
         Err(e) => log::error!("Could not fetch weather data! {:?}", e)
     };
 }
+
+#[cfg(not(windows))]
+impl HideAndSeek for Overlay {
+    fn stealth(&self) {/* No UI = no "stealth".*/}
+}
