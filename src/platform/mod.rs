@@ -1,4 +1,5 @@
 pub mod nogui;
+#[cfg(not(feature = "headless"))]
 #[cfg(target_os = "windows")]
 pub mod win;
 
