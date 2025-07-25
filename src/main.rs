@@ -1,4 +1,5 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(all(not(debug_assertions), not(feature="headless"), target_os="windows"), windows_subsystem = "windows")]
+#![cfg_attr(all(not(debug_assertions), feature="headless", target_os="windows"), windows_subsystem = "console")]
 mod query;
 mod platform;
 
@@ -91,6 +92,14 @@ impl ArgsAdjuster for CommandLineArgs {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    #[cfg(target_os="windows")]
+    {
+        // We want possible --headless/--oneshot call to actually print in PS/cmd, so …:
+        use windows::Win32::System::Console::{AttachConsole, ATTACH_PARENT_PROCESS};
+        unsafe {
+            let _ = AttachConsole(ATTACH_PARENT_PROCESS);
+        }
+    }
     let _ = env_logger::try_init();
 
     let args = CommandLineArgs::parse().adjust_to_features();
@@ -146,13 +155,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
     log::info!("Country set as '{}'", country);
 
     if args.oneshot {
-        nogui::get_weather(&city, &country).await;
-        return Ok(());
+        if let Ok(info) = nogui::get_weather(&city, &country).await {
+            println!("{}", info);
+            return Ok(());
+        }
+        std::process::exit(1);
     }
 
     if args.headless {
         loop {
-            nogui::get_weather(&city, &country).await;
+            if let Ok(info) = nogui::get_weather(&city, &country).await {
+                println!("{}", info);
+            }
             tokio::time::sleep(Duration::from_millis(MILLIS_CHECK_DELAY)).await;
         }
     }
