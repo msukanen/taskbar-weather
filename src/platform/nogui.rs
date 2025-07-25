@@ -17,6 +17,6 @@ pub async fn get_weather(city: &String, country: &String) {
             println!("{}", info);
             log::info!("Weather data: {}", info);
         },
-        Err(e) => log::error!("Could not fetch weather data! {:?}", e)
+        Err(e) => log::error!("Could not fetch weather data! {}", e)
     };
 }
