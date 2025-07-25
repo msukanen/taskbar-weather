@@ -4,6 +4,43 @@ Some sort of weather/temperature showing layer thingy.
 # Requires
 - Internet.
 
+# Compiling
+Issue either:
+- `cargo build` or
+- `cargo build --release`
+
+depending on whether you want debug clutter or not. For pure headless
+CLI-mode, add `--features "headless"`, e.g.:
+- `cargo build --release --features "headless"`
+
+# Running
+**taskbar-weather** works as both UI-widget/overlay
+and as a command-line tool. UI, however, is at the moment Windows-only
+feature — I'll get to other system(s) UI's later.
+## Command Line
+Issue either:
+- `taskbar-weather.exe --help` or
+- `./taskbar-weather --help`
+
+(at wherever you or cargo did put them). Should bring up something like this
+(as per time of writing):
+```text
+Taskbar-Weather — a tool to fetch your local weather. See LICENSE.
+
+Usage: taskbar-weather.exe [OPTIONS]
+
+Options:
+      --headless           If given, doesn't use UI and logs to console instead
+  -o, --oneshot            If given, checkes weather once, logs it to console, and quits right after
+      --city <CITY>        If given, overrides configured city setting(s)
+      --country <COUNTRY>  If given, overrides configured country setting(s)
+  -h, --help               Print help
+  -V, --version            Print version
+```
+
+Note that if built (or ran) with `--feature "headless"`, the app will
+naturally enforce `--headless` running.
+
 # Configuration
 By default, when first ran, the app creates an example `config.toml`
 file to OS-specific configuration directory. This isn't yet truly
@@ -12,7 +49,7 @@ at the moment tuned only for/with Win11).
 
 ### Windows
 Location of config file:
-- `C:\Users\USERNAME\AppData\Roaming\msukanen\TaskbarWeather\config.toml`
+- `C:\Users\USERNAME\AppData\Roaming\msukanen\TaskbarWeather\config\config.toml`
 
 ## Contents of `config.toml`
 ```toml
