@@ -43,9 +43,7 @@ naturally enforce `--headless` running (if no `--oneshot` is given, that is).
 
 # Configuration
 By default, when first ran, the app creates an example `config.toml`
-file to OS-specific configuration directory. This isn't yet truly
-cross-compilable (it does compile about anywhere, but UI stuff is
-at the moment tuned only for/with Win11).
+file to OS-specific configuration directory.
 
 ### Windows
 Location of config file:
