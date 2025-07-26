@@ -68,3 +68,10 @@ The code to hide this weather widget from alt-tab and taskbar
 non-interactable "display" with temperature data) is a boatload
 of dark arts and bitter hate toward M$ devs. More complicated mess
 of spaghetti than anything else in the app.
+
+The hybrid UI/console compilation is somewhat messy business with
+windoze's subsystems. Code compiled with UI enabled (default) has
+a guard against `--headless` running as the headless mode would
+run as a detached "ghost" which you can't kill without Task Manager
+(the app is in reality truly GUI one even though it can print to
+console).
