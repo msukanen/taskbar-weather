@@ -39,7 +39,7 @@ Options:
 ```
 
 Note that if built (or ran) with `--feature "headless"`, the app will
-naturally enforce `--headless` running.
+naturally enforce `--headless` running (if no `--oneshot` is given, that is).
 
 # Configuration
 By default, when first ran, the app creates an example `config.toml`
