@@ -170,10 +170,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if args.headless {
         if !HEADLESS_HORSEMAN
         {
-            eprintln!(
-                "Error: The UI version of this application does not support the continuous --headless mode on Windows.\n\n\
-                This is due to platform limitations that would cause it to run as an uncontrollable background process.\n\n\
-                Please use the --oneshot flag for a single check, or use the dedicated headless build of the application."
+            eprintln!("\n\
+ERROR: the UI version of this application does not support the continuous\n\
+`--headless` mode on Windows.\n\
+\n\
+This is due to platform limitations that would cause it to run as an\n\
+uncontrollable background process which only Task Manager could get rid of.\n\
+\n\
+Please use the `--oneshot` flag for a single check, or use the dedicated\n\
+headless build of the application."
             );
             std::process::exit(1);
         }
