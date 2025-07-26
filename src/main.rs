@@ -3,6 +3,11 @@
 mod query;
 mod platform;
 
+#[cfg(all(not(feature = "headless"), target_os="windows"))]
+const HEADLESS_HORSEMAN: bool = false;
+#[cfg(all(feature = "headless", target_os="windows"))]
+const HEADLESS_HORSEMAN: bool = true;
+
 use std::{error::Error, fs, time::Duration};
 use directories::ProjectDirs;
 use serde::Deserialize;
@@ -163,6 +168,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if args.headless {
+        if !HEADLESS_HORSEMAN
+        {
+            eprintln!(
+                "Error: The UI version of this application does not support the continuous --headless mode on Windows.\n\n\
+                This is due to platform limitations that would cause it to run as an uncontrollable background process.\n\n\
+                Please use the --oneshot flag for a single check, or use the dedicated headless build of the application."
+            );
+            std::process::exit(1);
+        }
         loop {
             if let Ok(info) = nogui::get_weather(&city, &country).await {
                 println!("{}", info);
